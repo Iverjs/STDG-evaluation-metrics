@@ -238,6 +238,42 @@ def scale_data(df) :
     return pd.DataFrame(scaled, columns=df.columns.tolist())
 
 
+def euclidean_distances(real, synthetic):
+    """
+    Compute the Euclidean distances between real data attributes and synthetic data attributes independently.
+    
+    Parameters
+    ----------
+    real : pandas.core.frame.DataFrame
+        The real dataframe
+
+    synthetic : pandas.core.frame.DataFrame
+        The synthetic dataframe
+
+    Returns
+    -------
+    list
+        A list with the distances values
+    """
+
+    # Get list of numerical column names
+    num_cols = real.select_dtypes(include=['int64', 'float64']).columns
+
+    # Initialize a list to save the distances values
+    dists = []
+
+    # Loop to perform the distances for each attribute
+    for c in num_cols:
+        # Replace NaN values with 0
+        real_col = real[c].fillna(0)
+        synth_col = synthetic[c].fillna(0)
+        dist = np.linalg.norm(real_col.values - synth_col.values)
+        dists.append(dist)
+
+    # return list of computed distances
+    return dists
+
+
 def cosine_distances(real, synthetic) :
 
     """Compute the cosine distances between real data attributes and synthetic data attributes independently.
