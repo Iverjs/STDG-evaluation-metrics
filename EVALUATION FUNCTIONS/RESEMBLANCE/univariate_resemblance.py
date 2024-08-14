@@ -264,7 +264,10 @@ def cosine_distances(real, synthetic) :
 
     #loop to perform the distances for each attribute
     for c in num_cols :
-        dists.append(distance.cosine(real[c].values, synthetic[c].values))
+        # replace missing values with '0' 
+        real_col = real[c].fillna(0)
+        synth_col = synthetic[c].fillna(0)
+        dists.append(distance.cosine(real_col.values, synth_col.values))
 
     #return the list with the computed distances
     return dists
