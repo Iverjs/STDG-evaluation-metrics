@@ -41,7 +41,7 @@ def basic_stats(df,df_name):
         # add to lists
         stats.append(f'{mean:.2f} ± {std:.2f}')
         
-    stats_df = pd.DataFrame({df_name:stats}, index=num_cols)
+    stats_df = pd.DataFrame({df_name:stats}, index=num_col)
     return stats_df
     
 def student_t_tests(real, synthetic) :
