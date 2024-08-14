@@ -38,7 +38,16 @@ def student_t_tests(real, synthetic) :
 
     #loop to perform the tests for each attribute
     for c in num_cols :
-        _, p = stats.ttest_ind(real[c], synthetic[c])
+        # Drop NaN values from both real and synthetic data
+        real_col = real[c].dropna()
+        synth_col = synthetic[c].dropna()
+        
+        # perform T-test if enough datapoints in each variable
+        if len(real_col) > 1 and len(synth_col) > 1:
+            _, p = stats.ttest_ind(real_col, synth_col)
+        else:
+            p = float('nan')
+            
         p_values.append(p)
 
     #return the obtained p-values
@@ -71,7 +80,16 @@ def mann_whitney_tests(real, synthetic) :
 
     #loop to perform the tests for each attribute
     for c in num_cols :
-        _, p = stats.mannwhitneyu(real[c], synthetic[c])
+        # Drop NaN values from both real and synthetic data
+        real_col = real[c].dropna()
+        synth_col = synthetic[c].dropna()
+        
+        # perform T-test if enough datapoints in each variable
+        if len(real_col) > 1 and len(synth_col) > 1:
+            _, p = stats.mannwhitneyu(real_col, synth_col)
+        else:
+            p = float('nan')
+            
         p_values.append(p)
 
     #return the obtained p-values
@@ -104,7 +122,16 @@ def ks_tests(real, synthetic) :
 
     #loop to perform the tests for each attribute
     for c in num_cols :
-        _, p = stats.ks_2samp(real[c], synthetic[c])
+        # Drop NaN values from both real and synthetic data
+        real_col = real[c].dropna()
+        synth_col = synthetic[c].dropna()
+        
+        # perform T-test if enough datapoints in each variable
+        if len(real_col) > 1 and len(synth_col) > 1:
+            _, p = stats.ks_2samp(real_col, synth_col)
+        else:
+            p = float('nan')
+            
         p_values.append(p)
 
     #return the obtained p-values
@@ -137,14 +164,23 @@ def chi_squared_tests(real, synthetic) :
 
     #loop to perform the tests for each attribute
     for c in cat_cols :
-        #create contingency table
-        observed = pd.crosstab(real[c], synthetic[c])
-        #perform chi-squared test
-        _, p, _, _ = chi2_contingency(observed)
-        p_values.append(p)
+        # drop NaN values from data
+        real_col = real[c].dropna()
+        synth_col = synthetic[c].dropna()
 
-    #return the obtained p-values
-    return p_values
+        # ensure both columns are non-empty
+        if len(real_col) > 1 and len(synth_col) > 1:
+            #create contingency table
+            observed = pd.crosstab(real_col, synth_col)
+            #perform chi-squared test
+            if observed.size>0:
+                _, p, _, _ = chi2_contingency(observed)
+            else:
+                p = float('nan')
+        else:
+            p = float('nan')
+        # add p-values to list    
+        p_values.append(p)
 
 
 def scale_data(df) :
