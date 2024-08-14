@@ -11,7 +11,7 @@ from scipy.stats import chi2_contingency
 from sklearn.preprocessing import MinMaxScaler
 import seaborn as sns
 
-def basic_stats(df):
+def basic_stats(df,df_name):
     """
     Calculate basic statistics (mean, standard deviation) for a DataFrame.
     
@@ -19,15 +19,29 @@ def basic_stats(df):
     ----------
     df : pandas.core.frame.DataFrame
         The DataFrame for which to calculate statistics.
+    df_name : str
+        The name to be used as the column header in the returned DataFrame
         
     Returns
     -------
     pandas.core.frame.DataFrame
         A DataFrame containing the mean and standard deviation for each column.
     """
-    means = df.mean()
-    stds = df.std()
-    stats_df = pd.DataFrame({'mean': means, 'std': stds})
+    # get list of numerical column names
+    num_col = (df.select_dtypes(include=['float64','int64'])).columns.tolist()
+    stats = []
+
+    # loop through columns
+    for c in num_col:
+        # drop NaN-values from column
+        non_na_col = df[c].dropna()
+        # calculate mean and std
+        mean = non_na_col.mean()
+        std = non_na_col.std()
+        # add to lists
+        stats.append(f'{mean:.2f} ± {std:.2f}')
+        
+    stats_df = pd.DataFrame({df_name:stats}, index=num_cols)
     return stats_df
     
 def student_t_tests(real, synthetic) :
