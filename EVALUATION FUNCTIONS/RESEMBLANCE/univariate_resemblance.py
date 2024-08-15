@@ -229,10 +229,12 @@ def scale_data(df) :
     pandas.core.frame.DataFrame
         A dataframe with the scaled data
     """
-
+    # impute NaN values with the column mean
+    df_filled = df.fillna(df.mean())
+    
     #initialize and fit the scaler
     scaler = MinMaxScaler()
-    scaled = scaler.fit_transform(df)
+    scaled = scaler.fit_transform(df_filled)
 
     #return the scaled dataframe
     return pd.DataFrame(scaled, columns=df.columns.tolist())
@@ -264,10 +266,7 @@ def euclidean_distances(real, synthetic):
 
     # Loop to perform the distances for each attribute
     for c in num_cols:
-        # Replace NaN values with 0
-        real_col = real[c].fillna(0)
-        synth_col = synthetic[c].fillna(0)
-        dist = np.linalg.norm(real_col.values - synth_col.values)
+        dist = np.linalg.norm(real[c].values - synthetic[c].values)
         dists.append(dist)
 
     # return list of computed distances
@@ -300,10 +299,7 @@ def cosine_distances(real, synthetic) :
 
     #loop to perform the distances for each attribute
     for c in num_cols :
-        # replace missing values with '0' 
-        real_col = real[c].fillna(0)
-        synth_col = synthetic[c].fillna(0)
-        dists.append(distance.cosine(real_col.values, synth_col.values))
+        dists.append(distance.cosine(real[c].values, synthetic[c].values))
 
     #return the list with the computed distances
     return dists
